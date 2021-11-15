@@ -1,2 +1,2 @@
 # formacion-nest
-proyecto de prueba con el framework Nestjs
+proyecto de prueba con el framework Nestjs 💃
