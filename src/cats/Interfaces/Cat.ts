@@ -1,5 +1,5 @@
 export interface Cat{
-    id?: number,
+    _id?: number,
     name: string,
     breed: string,
     isAdopted: boolean,

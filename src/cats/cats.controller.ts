@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { CreateCatDto } from "./dto/create-cat.dto";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, Res, } from '@nestjs/common';
+import { CatDto } from "./dto/cat.dto";
 import { CatsService } from "./cats.service";
 import { Cat } from "./Interfaces/Cat";
+
 
 @Controller('cats')
 export class CatsController {
@@ -13,17 +14,19 @@ export class CatsController {
         return this.catsService.getCats()
     }
     @Get(':catId')
-    findCat(@Param('catId') id: string): Cat{
-        return this.catsService.getCat(parseInt(id))
+    findCat(@Param('catId') id: string ): Cat{
+        const cat = this.catsService.getCat(parseInt(id))
+        if(!cat){
+            throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        }
+        return cat
     }
     @Post()
-    postCat(@Body() newCat:CreateCatDto):string {
-        console.log(newCat)
+    postCat(@Body() newCat:CatDto):string {
         return 'this is POST method for route cats and it will post a new cat'
     }
     @Put(':catId')
-    putCat(@Body() catEdit: CreateCatDto, @Param('catId') id):string{
-        console.log(catEdit, id)
+    putCat(@Body() catEdit: CatDto, @Param('catId') id):string{
         return 'this is PUT method for route cats and it will edit a cat'
     }
     @Delete(':catId')
