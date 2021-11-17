@@ -14,18 +14,15 @@ export class CatsController {
         return this.catsService.getCats()
     }
     @Get(':catId')
-    findCat(@Param('catId') id: string ): Promise<Cat>{
-        if (id.match(/^[0-9a-fA-F]{24}$/)) {
-            const cat = this.catsService.getCat(id)
-            // If statement not Workign properly.
-            // when passed a valid but not existing Id 
-            // it returns promise pending
-            if(!cat){
-                throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
-            }
-            return cat
+    async findCat(@Param('catId') id: string ): Promise<Cat>{     
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {  
+            throw new HttpException('Invalid Id', HttpStatus.NOT_ACCEPTABLE)
         }
-        throw new HttpException('Invalid Id', HttpStatus.NOT_ACCEPTABLE)
+        const cat = await this.catsService.getCat(id)
+        if(!cat){
+            throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        }
+        return cat
     }
 
 
@@ -34,15 +31,21 @@ export class CatsController {
         return this.catsService.createCat(newCat)
     }
 
-
     @Put(':catId')
     putCat(@Body() catEdit: CatDto, @Param('catId') id: string): Promise<Cat>{
         return this.catsService.updateCat(id, catEdit) 
     }
 
     @Delete(':catId')
-    deleteCat(@Param('catId') id: string):Promise<Cat>{
-        return this.catsService.deleteCat(id)
+    async deleteCat(@Param('catId') id: string):Promise<Cat>{
+        if (!id.match(/^[0-9a-fA-F]{24}$/)) {  
+            throw new HttpException('Invalid Id', HttpStatus.NOT_ACCEPTABLE)
+        }
+        const a = await this.catsService.deleteCat(id)
+        if(!a){
+            throw new HttpException('Not Found', HttpStatus.NOT_FOUND); 
+        }
+        throw new HttpException('item deleted', HttpStatus.NOT_ACCEPTABLE); 
         
     }
 }
