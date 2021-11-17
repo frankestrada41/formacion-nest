@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, 
 import { CatDto } from "./dto/cat.dto";
 import { CatsService } from "./cats.service";
 import { Cat } from "./Interfaces/Cat";
+import { ValidationPipe } from "./cat-pipes/id.validation.pipe";
 
 
 @Controller('cats')
@@ -14,10 +15,7 @@ export class CatsController {
         return this.catsService.getCats()
     }
     @Get(':catId')
-    async findCat(@Param('catId') id: string ): Promise<Cat>{     
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {  
-            throw new HttpException('Invalid Id', HttpStatus.NOT_ACCEPTABLE)
-        }
+    async findCat(@Param('catId', ValidationPipe) id: string ): Promise<Cat>{     
         const cat = await this.catsService.getCat(id)
         if(!cat){
             throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
@@ -37,10 +35,7 @@ export class CatsController {
     }
 
     @Delete(':catId')
-    async deleteCat(@Param('catId') id: string):Promise<Cat>{
-        if (!id.match(/^[0-9a-fA-F]{24}$/)) {  
-            throw new HttpException('Invalid Id', HttpStatus.NOT_ACCEPTABLE)
-        }
+    async deleteCat(@Param('catId', ValidationPipe) id: string):Promise<Cat>{
         const a = await this.catsService.deleteCat(id)
         if(!a){
             throw new HttpException('Not Found', HttpStatus.NOT_FOUND); 
