@@ -15,12 +15,17 @@ export class CatsController {
     }
     @Get(':catId')
     findCat(@Param('catId') id: string ): Promise<Cat>{
-        const cat = this.catsService.getCat(id)
-        
-        if(!cat){
-            throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+        if (id.match(/^[0-9a-fA-F]{24}$/)) {
+            const cat = this.catsService.getCat(id)
+            // If statement not Workign properly.
+            // when passed a valid but not existing Id 
+            // it returns promise pending
+            if(!cat){
+                throw new HttpException('Not Found', HttpStatus.NOT_FOUND);
+            }
+            return cat
         }
-        return cat
+        throw new HttpException('Invalid Id', HttpStatus.NOT_ACCEPTABLE)
     }
 
 
@@ -31,11 +36,13 @@ export class CatsController {
 
 
     @Put(':catId')
-    putCat(@Body() catEdit: CatDto, @Param('catId') id):string{
-        return 'this is PUT method for route cats and it will edit a cat'
+    putCat(@Body() catEdit: CatDto, @Param('catId') id: string): Promise<Cat>{
+        return this.catsService.updateCat(id, catEdit) 
     }
+
     @Delete(':catId')
-    deleteCat(@Param('catId') id):string{
-        return `this is DELETE method for route cats and it will delete a cat with id: ${id}`
+    deleteCat(@Param('catId') id: string):Promise<Cat>{
+        return this.catsService.deleteCat(id)
+        
     }
 }
